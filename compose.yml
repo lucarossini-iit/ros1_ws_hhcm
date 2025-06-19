@@ -1,0 +1,40 @@
+services:
+  ros1:
+    build:
+      dockerfile: Dockerfile
+      secrets: [netrc]
+      args:
+        - USER_ID
+    stdin_open: true
+    tty: true
+    privileged: true
+    entrypoint: /bin/bash
+    network_mode: host
+    restart: always
+    ulimits:
+      core: -1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # x11
+      - ~/.ssh:/root/.ssh  # ssh
+      - ~/.ssh:/home/user/.ssh  # ssh
+      - ./src:/home/user/xbot2_ws/src:rw  # this repo
+      - /var/run/dbus:/var/run/dbus
+      - /var/run/avahi-daemon/socket:/var/run/avahi-daemon/socket
+      - /dev:/dev
+    environment:
+      - TERM=xterm-256color
+      - DISPLAY
+      - HHCM_FOREST_CLONE_DEFAULT_PROTO=https
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+secrets:
+  netrc:
+    file: ~/.netrc
+
