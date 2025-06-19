@@ -16,6 +16,15 @@ RUN sudo apt-get update && sudo apt-get install -y sudo build-essential gfortran
 
 RUN sudo apt-get install -y libassimp-dev liblapack-dev libblas-dev libyaml-cpp-dev libmatio-dev
 
+# fix ROS GPG Key
+RUN sudo apt-key del F42ED6FBAB17C654 
+RUN sudo mkdir -p /etc/apt/keyrings 
+RUN curl -fsSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | \
+ gpg --dearmor | sudo tee /etc/apt/keyrings/ros-archive-keyring.gpg > /dev/null
+RUN echo "deb [signed-by=/etc/apt/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros/ubuntu focal main" | \
+sudo tee /etc/apt/sources.list.d/ros1-latest.list > /dev/null
+RUN sudo apt update
+
 RUN sudo apt-get install -y swig
 # # clang to generate mpc functions in c++
 RUN sudo apt-get install -y clang
